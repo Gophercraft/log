@@ -2,6 +2,8 @@ package log
 
 import (
 	"fmt"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/fatih/color"
@@ -102,7 +104,11 @@ func (w *ConsoleOutput) print(ln *Line) {
 
 	color.Set(color.Attribute(w.l.StyleSheet.TimeColor))
 
-	fmt.Printf("[%s] ", printTime(ln.Time))
+	timestamp := printTime(ln.Time)
+
+	fmt.Printf("[%s] ", timestamp)
+
+	timestampWidth := len(timestamp) + 3
 
 	color.Unset()
 
@@ -113,11 +119,27 @@ func (w *ConsoleOutput) print(ln *Line) {
 
 	fmt.Printf("[%s] ", ln.Category)
 
+	categoryWidth := len(ln.Category) + 3
+
 	if setColor {
 		color.Unset()
 	}
 
-	fmt.Printf("%s\r\n", ln.Text)
+	prefixWidth := categoryWidth + timestampWidth
+
+	for i, lineText := range strings.Split(ln.Text, "\n") {
+		if i > 0 {
+			for c := 0; c < prefixWidth; c++ {
+				fmt.Printf(" ")
+			}
+		}
+
+		fmt.Printf("%s\r\n", lineText)
+	}
+
+	if ln.Fatal {
+		os.Exit(1)
+	}
 
 	w.refreshProgressBars()
 }

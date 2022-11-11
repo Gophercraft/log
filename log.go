@@ -10,6 +10,7 @@ type Line struct {
 	Time     time.Time
 	Category Category
 	Text     string
+	Fatal    bool
 }
 
 type Logger struct {

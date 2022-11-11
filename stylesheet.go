@@ -9,14 +9,16 @@ import (
 type Color color.Attribute
 
 var (
-	Cyan  Color = Color(color.FgCyan)
-	White Color = Color(color.FgHiWhite)
+	Cyan   Color = Color(color.FgCyan)
+	White  Color = Color(color.FgHiWhite)
+	Yellow Color = Color(color.FgYellow)
+	Red    Color = Color(color.FgHiRed)
 )
 
 type StyleSheet struct {
 	Colors map[Category]Color
 
-	TimeColor Color // time of the
+	TimeColor Color // color of timestamp
 
 	// [=======> ]
 
@@ -32,6 +34,8 @@ type StyleSheet struct {
 var DefaultStyleSheet = StyleSheet{
 	Colors: map[Category]Color{
 		"debug": White,
+		"warn":  Yellow,
+		"error": Red,
 	},
 
 	TimeColor: Cyan,
@@ -41,7 +45,8 @@ var DefaultStyleSheet = StyleSheet{
 
 	BarLiquid: '=',
 	BarVoid:   ' ',
-	BarHead:   []rune{'/', '|', '\\', '-'},
+
+	BarHead: []rune{'|', '╱', '─', '╲'},
 
 	HeadOscillation: 300 * time.Millisecond,
 }
