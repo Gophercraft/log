@@ -1,23 +1,42 @@
 package log
 
 import (
+	"bytes"
 	"fmt"
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
 )
 
+func Sprint(args ...any) string {
+	buf := new(bytes.Buffer)
+
+	for i, arg := range args {
+		if i > 0 {
+			fmt.Fprint(buf, " ")
+		}
+
+		fmt.Fprint(buf, arg)
+	}
+
+	return buf.String()
+}
+
+func Sprintf(format string, args ...any) string {
+	return fmt.Sprintf(format, args...)
+}
+
 func (l *Logger) Println(args ...any) {
-	str := fmt.Sprint(args...)
+	str := Sprint(args...)
 	l.LogLine(&Line{time.Now(), "debug", str, false})
 }
 
 func (l *Logger) Printf(format string, args ...any) {
-	l.LogLine(&Line{time.Now(), "debug", fmt.Sprintf(format, args...), false})
+	l.LogLine(&Line{time.Now(), "debug", Sprintf(format, args...), false})
 }
 
 func (l *Logger) CatPrintf(cat Category, format string, args ...any) {
-	l.LogLine(&Line{time.Now(), cat, fmt.Sprintf(format, args...), false})
+	l.LogLine(&Line{time.Now(), cat, Sprintf(format, args...), false})
 }
 
 // shorthand
@@ -34,13 +53,13 @@ func Printf(format string, args ...any) {
 
 // Prints a warning to the default logger
 func Warn(args ...any) {
-	str := fmt.Sprint(args...)
+	str := Sprint(args...)
 	DefaultLogger.LogLine(&Line{time.Now(), "warn", str, false})
 }
 
 // Prints 1+ error messages to the default logger
 func Err(args ...any) {
-	str := fmt.Sprint(args...)
+	str := Sprint(args...)
 	DefaultLogger.LogLine(&Line{time.Now(), "error", str, false})
 }
 
@@ -52,7 +71,7 @@ func death() {
 
 // Crash the program, providing 1+ error messages
 func Fatal(args ...any) {
-	str := fmt.Sprint(append([]any{"Fatal: "}, args...)...)
+	str := Sprint(append([]any{"Fatal: "}, args...)...)
 	DefaultLogger.LogLine(&Line{time.Now(), "error", str, true})
 	death()
 }
@@ -65,7 +84,7 @@ func NewDumpLine(name string, cat Category, object any) *Line {
 	return &Line{
 		time.Now(),
 		cat,
-		fmt.Sprintf("%s = %s", name, dump(object)),
+		Sprintf("%s = %s", name, dump(object)),
 		false,
 	}
 }
